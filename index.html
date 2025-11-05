@@ -1,117 +1,211 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floating Solar PV Plant Parameter Calculator</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #e3f2fd);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-export default function FloatingSolarPVCalculator() {
-  const [inputs, setInputs] = useState({
-    insolation: "",
-    efficiency: "",
-    performanceRatio: "",
-    area: "",
-    time: "",
-    dcBusVoltage: "",
-    panelVoltage: "",
-    panelCurrent: "",
-    panelBreadth: "",
-  });
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      padding: 30px 40px;
+      width: 450px;
+      max-width: 95%;
+    }
 
-  const [results, setResults] = useState(null);
+    h1 {
+      text-align: center;
+      color: #0d47a1;
+      margin-bottom: 20px;
+    }
 
-  const handleChange = (e) => {
-    setInputs({ ...inputs, [e.target.name]: e.target.value });
-  };
+    .input-group {
+      margin-bottom: 12px;
+    }
 
-  const calculate = () => {
-    const {
-      insolation,
-      efficiency,
-      performanceRatio,
-      area,
-      time,
-      dcBusVoltage,
-      panelVoltage,
-      panelCurrent,
-      panelBreadth,
-    } = inputs;
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
 
-    // Step 2: Plant Capacity
-    const capacityWatts =
-      (insolation * (efficiency / 100) * (performanceRatio / 100) * area * 1000000) /
-      time;
-    const capacityMW = capacityWatts / 1e6;
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #bbdefb;
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
 
-    // Step 4: Series & Parallel Configuration
-    const panelsInSeries = dcBusVoltage / panelVoltage;
-    const panelsInParallel = capacityWatts / 1000 / (dcBusVoltage * panelCurrent);
+    input:focus {
+      border-color: #0d47a1;
+      box-shadow: 0 0 5px rgba(13, 71, 161, 0.4);
+    }
 
-    // Step 5: Total Panels
-    const totalPanels = Math.round(Math.abs(panelsInSeries) * Math.abs(panelsInParallel));
+    button {
+      width: 100%;
+      background-color: #0d47a1;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
 
-    // Step 6: Area Required
-    const totalAreaRequired = (totalPanels * panelBreadth * area) / 1e6;
+    button:hover {
+      background-color: #1565c0;
+      transform: translateY(-1px);
+    }
 
-    setResults({
-      capacityWatts,
-      capacityMW,
-      panelsInSeries,
-      panelsInParallel,
-      totalPanels,
-      totalAreaRequired,
-    });
-  };
+    .results {
+      background: #e3f2fd;
+      border-radius: 15px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 5px solid #0d47a1;
+      display: none;
+    }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-sky-100 to-indigo-100 p-6">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6 text-center text-indigo-700">
-          ☀️ Floating Solar PV Plant Parameter Calculator
-        </h1>
+    .results h2 {
+      color: #0d47a1;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-        <div className="grid grid-cols-2 gap-4">
-          {Object.keys(inputs).map((key) => (
-            <input
-              key={key}
-              type="number"
-              step="any"
-              placeholder={key
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (s) => s.toUpperCase())}
-              name={key}
-              value={inputs[key]}
-              onChange={handleChange}
-              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          ))}
-        </div>
+    .results p {
+      margin: 6px 0;
+      color: #333;
+    }
 
-        <button
-          onClick={calculate}
-          className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition"
-        >
-          Calculate
-        </button>
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>☀️ Floating Solar PV Calculator</h1>
 
-        {results && (
-          <div className="mt-8 bg-sky-50 p-4 rounded-xl text-gray-800">
-            <h2 className="text-lg font-semibold mb-2 text-indigo-700">
-              🌞 Results:
-            </h2>
-            <p>
-              <b>Plant Capacity:</b> {results.capacityWatts.toFixed(2)} W ({results.capacityMW.toFixed(4)} MW)
-            </p>
-            <p>
-              <b>Panels in Series:</b> {results.panelsInSeries.toFixed(2)}
-            </p>
-            <p>
-              <b>Panels in Parallel:</b> {results.panelsInParallel.toFixed(2)}
-            </p>
-            <p>
-              <b>Total Panels:</b> {results.totalPanels}
-            </p>
-            <p>
-              <b>Total Area Required:</b> {results.totalAreaRequired.toFixed(2)} km²
-            </p>
-          </div>
-        )}
-      </div>
+    <div class="input-group">
+      <label>Solar Insolation (kWh/m²/day):</label>
+      <input type="number" id="insolation" step="any" />
     </div>
-  );
-}
+
+    <div class="input-group">
+      <label>Panel Efficiency (%):</label>
+      <input type="number" id="efficiency" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Performance Ratio (%):</label>
+      <input type="number" id="performanceRatio" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Total Area (m²):</label>
+      <input type="number" id="area" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Total Clear Sky Time (hours):</label>
+      <input type="number" id="time" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>DC Bus Voltage (V):</label>
+      <input type="number" id="dcBusVoltage" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Panel Output Voltage (V):</label>
+      <input type="number" id="panelVoltage" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Panel Output Current (A):</label>
+      <input type="number" id="panelCurrent" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Breadth of One Panel (m):</label>
+      <input type="number" id="panelBreadth" step="any" />
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="results" id="resultsBox">
+      <h2>🌞 Results:</h2>
+      <p id="capacity"></p>
+      <p id="series"></p>
+      <p id="parallel"></p>
+      <p id="totalPanels"></p>
+      <p id="areaRequired"></p>
+    </div>
+
+    <footer>Developed for Floating Solar PV Plant Study | MATLAB-inspired</footer>
+  </div>
+
+  <script>
+    function calculate() {
+      // Get input values
+      const insolation = parseFloat(document.getElementById("insolation").value);
+      const efficiency = parseFloat(document.getElementById("efficiency").value);
+      const performanceRatio = parseFloat(document.getElementById("performanceRatio").value);
+      const area = parseFloat(document.getElementById("area").value);
+      const time = parseFloat(document.getElementById("time").value);
+      const dcBusVoltage = parseFloat(document.getElementById("dcBusVoltage").value);
+      const panelVoltage = parseFloat(document.getElementById("panelVoltage").value);
+      const panelCurrent = parseFloat(document.getElementById("panelCurrent").value);
+      const panelBreadth = parseFloat(document.getElementById("panelBreadth").value);
+
+      if (isNaN(insolation) || isNaN(efficiency) || isNaN(performanceRatio) || isNaN(area) || isNaN(time) || isNaN(dcBusVoltage) || isNaN(panelVoltage) || isNaN(panelCurrent) || isNaN(panelBreadth)) {
+        alert("⚠️ Please enter all values correctly!");
+        return;
+      }
+
+      // Step 2: Calculate Capacity
+      const capacityWatts = (insolation * (efficiency / 100) * (performanceRatio / 100) * area * 1000000) / time;
+      const capacityMW = capacityWatts / 1e6;
+
+      // Step 4: Panels in Series and Parallel
+      const panelsInSeries = dcBusVoltage / panelVoltage;
+      const panelsInParallel = (capacityWatts / 1000) / (dcBusVoltage * panelCurrent);
+
+      // Step 5: Total Panels
+      const totalPanels = Math.round(Math.abs(panelsInSeries) * Math.abs(panelsInParallel));
+
+      // Step 6: Area Required
+      const totalAreaRequired = (totalPanels * panelBreadth * area) / 1e6;
+
+      // Display Results
+      document.getElementById("resultsBox").style.display = "block";
+      document.getElementById("capacity").innerHTML = `<b>Plant Capacity:</b> ${capacityWatts.toFixed(2)} W (${capacityMW.toFixed(4)} MW)`;
+      document.getElementById("series").innerHTML = `<b>Panels in Series:</b> ${panelsInSeries.toFixed(2)}`;
+      document.getElementById("parallel").innerHTML = `<b>Panels in Parallel:</b> ${panelsInParallel.toFixed(2)}`;
+      document.getElementById("totalPanels").innerHTML = `<b>Total Panels:</b> ${totalPanels}`;
+      document.getElementById("areaRequired").innerHTML = `<b>Total Area Required:</b> ${totalAreaRequired.toFixed(2)} km²`;
+    }
+  </script>
+</body>
+</html>
