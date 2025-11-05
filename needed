@@ -1,0 +1,117 @@
+import { useState } from "react";
+
+export default function FloatingSolarPVCalculator() {
+  const [inputs, setInputs] = useState({
+    insolation: "",
+    efficiency: "",
+    performanceRatio: "",
+    area: "",
+    time: "",
+    dcBusVoltage: "",
+    panelVoltage: "",
+    panelCurrent: "",
+    panelBreadth: "",
+  });
+
+  const [results, setResults] = useState(null);
+
+  const handleChange = (e) => {
+    setInputs({ ...inputs, [e.target.name]: e.target.value });
+  };
+
+  const calculate = () => {
+    const {
+      insolation,
+      efficiency,
+      performanceRatio,
+      area,
+      time,
+      dcBusVoltage,
+      panelVoltage,
+      panelCurrent,
+      panelBreadth,
+    } = inputs;
+
+    // Step 2: Plant Capacity
+    const capacityWatts =
+      (insolation * (efficiency / 100) * (performanceRatio / 100) * area * 1000000) /
+      time;
+    const capacityMW = capacityWatts / 1e6;
+
+    // Step 4: Series & Parallel Configuration
+    const panelsInSeries = dcBusVoltage / panelVoltage;
+    const panelsInParallel = capacityWatts / 1000 / (dcBusVoltage * panelCurrent);
+
+    // Step 5: Total Panels
+    const totalPanels = Math.round(Math.abs(panelsInSeries) * Math.abs(panelsInParallel));
+
+    // Step 6: Area Required
+    const totalAreaRequired = (totalPanels * panelBreadth * area) / 1e6;
+
+    setResults({
+      capacityWatts,
+      capacityMW,
+      panelsInSeries,
+      panelsInParallel,
+      totalPanels,
+      totalAreaRequired,
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-sky-100 to-indigo-100 p-6">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl">
+        <h1 className="text-2xl font-bold mb-6 text-center text-indigo-700">
+          ☀️ Floating Solar PV Plant Parameter Calculator
+        </h1>
+
+        <div className="grid grid-cols-2 gap-4">
+          {Object.keys(inputs).map((key) => (
+            <input
+              key={key}
+              type="number"
+              step="any"
+              placeholder={key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase())}
+              name={key}
+              value={inputs[key]}
+              onChange={handleChange}
+              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={calculate}
+          className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition"
+        >
+          Calculate
+        </button>
+
+        {results && (
+          <div className="mt-8 bg-sky-50 p-4 rounded-xl text-gray-800">
+            <h2 className="text-lg font-semibold mb-2 text-indigo-700">
+              🌞 Results:
+            </h2>
+            <p>
+              <b>Plant Capacity:</b> {results.capacityWatts.toFixed(2)} W ({results.capacityMW.toFixed(4)} MW)
+            </p>
+            <p>
+              <b>Panels in Series:</b> {results.panelsInSeries.toFixed(2)}
+            </p>
+            <p>
+              <b>Panels in Parallel:</b> {results.panelsInParallel.toFixed(2)}
+            </p>
+            <p>
+              <b>Total Panels:</b> {results.totalPanels}
+            </p>
+            <p>
+              <b>Total Area Required:</b> {results.totalAreaRequired.toFixed(2)} km²
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
