@@ -4,108 +4,227 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Floating Solar PV Plant Parameter Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #e0f7fa, #e3f2fd);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -100px;
+      left: -100px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      bottom: -150px;
+      right: -150px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(20px) translateX(20px); }
     }
 
     .container {
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      padding: 30px 40px;
-      width: 450px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px 45px;
+      width: 500px;
       max-width: 95%;
+      position: relative;
+      z-index: 1;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     h1 {
       text-align: center;
-      color: #0d47a1;
-      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     .input-group {
-      margin-bottom: 12px;
+      margin-bottom: 18px;
+      position: relative;
     }
 
     label {
       display: block;
       font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
+      color: #2d3748;
+      margin-bottom: 8px;
+      font-size: 14px;
+      transition: color 0.3s;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      border: 2px solid #bbdefb;
-      border-radius: 10px;
+      padding: 14px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
       outline: none;
-      transition: all 0.2s;
-      font-size: 14px;
+      transition: all 0.3s ease;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      background: #f8fafc;
     }
 
     input:focus {
-      border-color: #0d47a1;
-      box-shadow: 0 0 5px rgba(13, 71, 161, 0.4);
+      border-color: #667eea;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    input:hover {
+      border-color: #cbd5e0;
     }
 
     button {
       width: 100%;
-      background-color: #0d47a1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       border: none;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 16px;
+      border-radius: 12px;
       cursor: pointer;
-      margin-top: 10px;
-      transition: 0.3s;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      letter-spacing: 0.5px;
     }
 
     button:hover {
-      background-color: #1565c0;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    button:active {
       transform: translateY(-1px);
     }
 
     .results {
-      background: #e3f2fd;
-      border-radius: 15px;
-      padding: 15px;
-      margin-top: 20px;
-      border-left: 5px solid #0d47a1;
+      background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+      border-radius: 20px;
+      padding: 25px;
+      margin-top: 30px;
+      border-left: 5px solid #667eea;
       display: none;
+      animation: fadeIn 0.5s ease-in;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .results h2 {
-      color: #0d47a1;
-      font-size: 18px;
-      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 700;
     }
 
     .results p {
-      margin: 6px 0;
-      color: #333;
+      margin: 12px 0;
+      color: #2d3748;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .results p:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(5px);
+    }
+
+    .results p b {
+      color: #667eea;
+      font-weight: 600;
     }
 
     footer {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 25px;
       font-size: 13px;
-      color: #777;
+      color: #718096;
+      font-weight: 400;
+    }
+
+    .sun-icon {
+      display: inline-block;
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>☀️ Floating Solar PV Calculator</h1>
+    <h1><span class="sun-icon">☀️</span> Floating Solar PV Calculator</h1>
 
     <div class="input-group">
       <label>Solar Insolation (kWh/m²/day):</label>
@@ -123,7 +242,7 @@
     </div>
 
     <div class="input-group">
-      <label>Total Area (m²):</label>
+      <label>Total Area (km²):</label>
       <input type="number" id="area" step="any" />
     </div>
 
@@ -145,6 +264,11 @@
     <div class="input-group">
       <label>Panel Output Current (A):</label>
       <input type="number" id="panelCurrent" step="any" />
+    </div>
+
+    <div class="input-group">
+      <label>Length of One Panel (m):</label>
+      <input type="number" id="panellength" step="any" />
     </div>
 
     <div class="input-group">
@@ -177,30 +301,31 @@
       const dcBusVoltage = parseFloat(document.getElementById("dcBusVoltage").value);
       const panelVoltage = parseFloat(document.getElementById("panelVoltage").value);
       const panelCurrent = parseFloat(document.getElementById("panelCurrent").value);
+      const panellength = parseFloat(document.getElementById("panellength").value);
       const panelBreadth = parseFloat(document.getElementById("panelBreadth").value);
 
-      if (isNaN(insolation) || isNaN(efficiency) || isNaN(performanceRatio) || isNaN(area) || isNaN(time) || isNaN(dcBusVoltage) || isNaN(panelVoltage) || isNaN(panelCurrent) || isNaN(panelBreadth)) {
+      if (isNaN(insolation) || isNaN(efficiency) || isNaN(performanceRatio) || isNaN(area) || isNaN(time) || isNaN(dcBusVoltage) || isNaN(panelVoltage) || isNaN(panelCurrent) || isNaN(panellength) || isNaN(panelBreadth)) {
         alert("⚠️ Please enter all values correctly!");
         return;
       }
 
       // Step 2: Calculate Capacity
       const capacityWatts = (insolation * (efficiency / 100) * (performanceRatio / 100) * area * 1000000) / time;
-      const capacityMW = capacityWatts / 1e6;
+      const capacityMW = capacityWatts / 1000;
 
       // Step 4: Panels in Series and Parallel
       const panelsInSeries = dcBusVoltage / panelVoltage;
-      const panelsInParallel = (capacityWatts / 1000) / (dcBusVoltage * panelCurrent);
+      const panelsInParallel = (capacityWatts / (dcBusVoltage/1000)) / (panelCurrent);
 
       // Step 5: Total Panels
-      const totalPanels = Math.round(Math.abs(panelsInSeries) * Math.abs(panelsInParallel));
+      const totalPanels = Math.round(Math.round(panelsInSeries) * Math.round(panelsInParallel));
 
       // Step 6: Area Required
-      const totalAreaRequired = (totalPanels * panelBreadth * area) / 1e6;
+      const totalAreaRequired = (totalPanels * panelBreadth * panellength)/1000000;
 
       // Display Results
       document.getElementById("resultsBox").style.display = "block";
-      document.getElementById("capacity").innerHTML = `<b>Plant Capacity:</b> ${capacityWatts.toFixed(2)} W (${capacityMW.toFixed(4)} MW)`;
+      document.getElementById("capacity").innerHTML = `<b>Plant Capacity:</b> ${capacityWatts.toFixed(2)} KW (${capacityMW.toFixed(4)} MW)`;
       document.getElementById("series").innerHTML = `<b>Panels in Series:</b> ${panelsInSeries.toFixed(2)}`;
       document.getElementById("parallel").innerHTML = `<b>Panels in Parallel:</b> ${panelsInParallel.toFixed(2)}`;
       document.getElementById("totalPanels").innerHTML = `<b>Total Panels:</b> ${totalPanels}`;
